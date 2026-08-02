@@ -141,6 +141,9 @@
 
     <button class="btn" onclick="celebrar()">¡Servir un vaso virtual! 🎉</button>
 
+    <!-- Sonido en formato MP3 -->
+    <audio id="sodaSound" src="https://assets.mixkit.co/active_storage/sfx/2202/2202-preview.mp3" preload="auto"></audio>
+
     <footer>
         <p>Hecho para refrescar tu día • Disfruta bien fría ❄️</p>
         <p style="margin-top: 0.5rem; font-style: italic; opacity: 0.8;">Me agarro la esquizofrenia y lo cree att Mau</p>
@@ -148,7 +151,13 @@
 
     <script>
         function celebrar() {
-            alert('🥤 ¡Clink! Salud por una soda helada hoy. ¡Que la disfrutes!');
+            var audio = document.getElementById("sodaSound");
+            audio.currentTime = 0; // Reinicia el audio si vuelven a dar clic
+            audio.play();
+            
+            setTimeout(function() {
+                alert('🥤 ¡Clink! Salud por una soda helada hoy. ¡Que la disfrutes!');
+            }, 300);
         }
     </script>
 </body>
