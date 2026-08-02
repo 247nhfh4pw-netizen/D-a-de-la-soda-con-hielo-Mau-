@@ -103,9 +103,17 @@
             box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        #mensaje {
+            margin-top: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            min-height: 2rem;
+            text-align: center;
         }
 
         footer {
@@ -113,6 +121,7 @@
             color: var(--text-muted);
             font-size: 0.9rem;
             text-align: center;
+            padding-top: 2rem;
         }
 
         @keyframes float {
@@ -140,9 +149,7 @@
     </main>
 
     <button class="btn" onclick="celebrar()">¡Servir un vaso virtual! 🎉</button>
-
-    <!-- Sonido realista de soda con hielo servida -->
-    <audio id="sodaSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c9a62243.mp3?filename=pouring-soda-2202.mp3" preload="auto"></audio>
+    <div id="mensaje"></div>
 
     <footer>
         <p>Hecho para refrescar tu día • Disfruta bien fría ❄️</p>
@@ -151,13 +158,36 @@
 
     <script>
         function celebrar() {
-            var audio = document.getElementById("sodaSound");
-            audio.currentTime = 0;
-            audio.play().catch(function(e){ console.log("Audio play error:", e); });
-            
-            setTimeout(function() {
-                alert('🥤 ¡Clink! Salud por una soda helada hoy. ¡Que la disfrutes!');
-            }, 500);
+            // Genera el sonido directamente mediante Web Audio API (compatible con todos los celulares)
+            var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            var bufferSize = audioCtx.sampleRate * 2.5; // 2.5 segundos de sonido
+            var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            var output = buffer.getChannelData(0);
+
+            for (var i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1; // Ruido blanco (efervescencia)
+            }
+
+            var whiteNoise = audioCtx.createBufferSource();
+            whiteNoise.buffer = buffer;
+
+            var filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(1200, audioCtx.currentTime);
+            filter.Q.setValueAtTime(3, audioCtx.currentTime);
+
+            var gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 2.5);
+
+            whiteNoise.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            whiteNoise.start();
+
+            // Muestra mensaje en pantalla sin pausar el sonido
+            document.getElementById("mensaje").innerText = "🥤 ¡Shhh! Sirviendo soda bien helada... 🧊✨";
         }
     </script>
 </body>
