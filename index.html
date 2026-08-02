@@ -141,8 +141,8 @@
 
     <button class="btn" onclick="celebrar()">¡Servir un vaso virtual! 🎉</button>
 
-    <!-- Sonido en formato MP3 -->
-    <audio id="sodaSound" src="https://assets.mixkit.co/active_storage/sfx/2202/2202-preview.mp3" preload="auto"></audio>
+    <!-- Sonido realista de soda con hielo servida -->
+    <audio id="sodaSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c9a62243.mp3?filename=pouring-soda-2202.mp3" preload="auto"></audio>
 
     <footer>
         <p>Hecho para refrescar tu día • Disfruta bien fría ❄️</p>
@@ -152,12 +152,12 @@
     <script>
         function celebrar() {
             var audio = document.getElementById("sodaSound");
-            audio.currentTime = 0; // Reinicia el audio si vuelven a dar clic
-            audio.play();
+            audio.currentTime = 0;
+            audio.play().catch(function(e){ console.log("Audio play error:", e); });
             
             setTimeout(function() {
                 alert('🥤 ¡Clink! Salud por una soda helada hoy. ¡Que la disfrutes!');
-            }, 300);
+            }, 500);
         }
     </script>
 </body>
