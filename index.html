@@ -101,20 +101,11 @@
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
-            -webkit-tap-highlight-color: transparent;
         }
 
-        .btn:active {
-            transform: scale(0.95);
-        }
-
-        #mensaje {
-            margin-top: 1.5rem;
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--accent-blue);
-            min-height: 2rem;
-            text-align: center;
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.6);
         }
 
         footer {
@@ -122,7 +113,6 @@
             color: var(--text-muted);
             font-size: 0.9rem;
             text-align: center;
-            padding-top: 2rem;
         }
 
         @keyframes float {
@@ -149,8 +139,7 @@
         </ul>
     </main>
 
-    <button class="btn" id="btnServir">¡Servir un vaso virtual! 🎉</button>
-    <div id="mensaje"></div>
+    <button class="btn" onclick="celebrar()">¡Servir un vaso virtual! 🎉</button>
 
     <footer>
         <p>Hecho para refrescar tu día • Disfruta bien fría ❄️</p>
@@ -158,45 +147,10 @@
     </footer>
 
     <script>
-        var audioCtx = null;
-
-        document.getElementById("btnServir").addEventListener("click", function() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-
-            // Crear sonido de efervescencia
-            var bufferSize = audioCtx.sampleRate * 2;
-            var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            var output = buffer.getChannelData(0);
-            for (var i = 0; i < bufferSize; i++) {
-                output[i] = Math.random() * 2 - 1;
-            }
-
-            var whiteNoise = audioCtx.createBufferSource();
-            whiteNoise.buffer = buffer;
-
-            var filter = audioCtx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.setValueAtTime(1500, audioCtx.currentTime);
-            filter.Q.setValueAtTime(4, audioCtx.currentTime);
-
-            var gainNode = audioCtx.createGain();
-            gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2);
-
-            whiteNoise.connect(filter);
-            filter.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-
-            whiteNoise.start();
-
-            // Mensaje en pantalla
-            document.getElementById("mensaje").innerText = "🥤 ¡Shhh! Sirviendo soda bien helada... 🧊✨";
-        });
+        function celebrar() {
+            alert('🥤 ¡Clink! Salud por una soda helada hoy. ¡Que la disfrutes!');
+        }
     </script>
 </body>
 </html>
+
