@@ -101,6 +101,7 @@
             cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn:active {
@@ -148,11 +149,8 @@
         </ul>
     </main>
 
-    <button class="btn" onclick="celebrar()">¡Servir un vaso virtual! 🎉</button>
+    <button class="btn" id="btnServir">¡Servir un vaso virtual! 🎉</button>
     <div id="mensaje"></div>
-
-    <!-- Audio MP3 en CDN compatible con móviles -->
-    <audio id="sodaSound" src="https://actions.google.com/sounds/v1/household/pour_water.ogg" preload="auto"></audio>
 
     <footer>
         <p>Hecho para refrescar tu día • Disfruta bien fría ❄️</p>
@@ -160,21 +158,45 @@
     </footer>
 
     <script>
-        function celebrar() {
-            var audio = document.getElementById("sodaSound");
-            audio.currentTime = 0;
-            
-            // Inicia la reproducción directamente con la interacción del usuario
-            var playPromise = audio.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(function() {
-                    document.getElementById("mensaje").innerText = "🥤 ¡Serviendo soda helada... disfruta la efervescencia! 🧊✨";
-                }).catch(function(error) {
-                    console.log("Error al reproducir audio:", error);
-                });
+        var audioCtx = null;
+
+        document.getElementById("btnServir").addEventListener("click", function() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
-        }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            // Crear sonido de efervescencia
+            var bufferSize = audioCtx.sampleRate * 2;
+            var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            var output = buffer.getChannelData(0);
+            for (var i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            var whiteNoise = audioCtx.createBufferSource();
+            whiteNoise.buffer = buffer;
+
+            var filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(1500, audioCtx.currentTime);
+            filter.Q.setValueAtTime(4, audioCtx.currentTime);
+
+            var gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2);
+
+            whiteNoise.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            whiteNoise.start();
+
+            // Mensaje en pantalla
+            document.getElementById("mensaje").innerText = "🥤 ¡Shhh! Sirviendo soda bien helada... 🧊✨";
+        });
     </script>
 </body>
 </html>
